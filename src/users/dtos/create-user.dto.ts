@@ -1,28 +1,76 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEmail, IsString, IsInt, IsNotEmpty, IsOptional } from "class-validator";
+// src/users/dtos/create-user.dto.ts
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
-  @ApiProperty({
-    description: 'Email address of the user',
-    example: 'user@mail.com',
-  })
-  email: string;
+  @ApiProperty({ description: 'Personel sicil numarası', example: 'A12345' })
+  sicil_no: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({
-    description: 'Password for the user account',
-    example: 'password123',
-  })
-  password: string;
+  @ApiProperty({ description: 'Ad', example: 'Asya' })
+  first_name: string;
 
-  @IsInt()
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'Soyad', example: 'Berk' })
+  last_name: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'E-posta', example: 'user@mail.com' })
+  email: string;
+
+  // Auth tarafı için şifre opsiyonel (import’ta olmayabilir)
+  @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'Role ID of the user (optional)',
-    example: 1
+    description: 'Parola (opsiyonel, importta boş gelebilir)',
+    example: 'password123',
   })
-  roleId?: number;
+  password?: string;
+
+  // FK’ler (Excel’den isimle geleceği için import aşamasında id’ye çevireceğiz)
+  @Type(() => Number)
+  @IsInt()
+  @ApiProperty({ description: 'Role ID', example: 1 })
+  role_id: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @ApiProperty({ description: 'Department ID', example: 10 })
+  department_id: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Office ID', example: 3 })
+  office_id?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Tesis ID', example: 2 })
+  tesis_id?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Şeflik ID', example: 7 })
+  seflik_id?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Müdürlük ID', example: 9 })
+  mudurluk_id?: number;
 }

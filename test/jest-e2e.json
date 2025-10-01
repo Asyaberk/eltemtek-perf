@@ -14,6 +14,8 @@
     "@app/config": "<rootDir>/../libs/config/src",
     "@app/config/(.*)": "<rootDir>/../libs/config/src/$1",
     "@app/kafka": "<rootDir>/../libs/kafka/src",
-    "@app/kafka/(.*)": "<rootDir>/../libs/kafka/src/$1"
+    "@app/kafka/(.*)": "<rootDir>/../libs/kafka/src/$1",
+    "@app/organisation": "<rootDir>/../libs/organisation/src",
+    "@app/organisation/(.*)": "<rootDir>/../libs/organisation/src/$1"
   }
 }

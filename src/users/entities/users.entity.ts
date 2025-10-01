@@ -1,30 +1,58 @@
-import { AfterInsert, Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm"; 
+// src/users/entities/users.entity.ts
+import { AfterInsert, Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index } from "typeorm"; 
 import { Role } from "../../roles/entities/roles.entity";
 import { Exclude } from "class-transformer";
+import { Department, Office, Tesis, Seflik, Mudurluk } from "@app/organisation";
 
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-@Entity('user')
-export class User{
+  @Index({ unique: true })
+  @Column()
+  sicil_no: string;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column()
+  first_name: string;
 
-    @Column()
-    email: string;
+  @Column()
+  last_name: string;
 
-    //exclude, we dont want to see pasword in body response
-    @Exclude()
-    @Column()
-    password: string;
+  @Index({ unique: true })
+  @Column()
+  email: string;
 
-    //A user can have at most one role (but there can be more than one user with a role)
-    @ManyToOne(() => Role, role => role.users)
-    role: Role;
+  @Exclude()
+  @Column({ nullable: true })
+  password?: string; 
 
-    //control user insert from terminal  
-    @AfterInsert()
-    logInsert() {
-        console.log('Inserted User with id: ', this.id);
-    }
+  @ManyToOne(() => Role, (role) => role.users, { nullable: false, eager: true })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 
+  @ManyToOne(() => Department, { nullable: false, eager: true })
+  @JoinColumn({ name: 'department_id' })
+  department: Department;
+
+  @ManyToOne(() => Office, { nullable: true, eager: true })
+  @JoinColumn({ name: 'office_id' })
+  office?: Office;
+
+  @ManyToOne(() => Tesis, { nullable: true, eager: true })
+  @JoinColumn({ name: 'tesis_id' })
+  tesis?: Tesis;
+
+  @ManyToOne(() => Seflik, { nullable: true, eager: true })
+  @JoinColumn({ name: 'seflik_id' })
+  seflik?: Seflik;
+
+  @ManyToOne(() => Mudurluk, { nullable: true, eager: true })
+  @JoinColumn({ name: 'mudurluk_id' })
+  mudurluk?: Mudurluk;
+
+  @AfterInsert()
+  logInsert() {
+    console.log('Inserted User with id: ', this.id);
+  }
 }

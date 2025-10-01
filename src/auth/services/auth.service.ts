@@ -1,11 +1,10 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserDto } from '../../users/dtos/create-user.dto';
+import { RegisterUserDto } from '../dtos/register-user.dto';
 //installled bcrypt
 import * as bcrypt from "bcrypt";
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from '../../users/dtos/login-user.dto';
 import { UserRepository } from '../../users/repositories/users.repository';
-import { User } from '../../users/entities/users.entity';
 
 @Injectable()
 export class AuthService {
@@ -17,26 +16,23 @@ export class AuthService {
     ) { }
 
     //register function
-    async register(body: CreateUserDto) {
-        //check if email is in use
-        const emailInUse = await this.repo.findOneByEmail(body.email);
-        if (emailInUse) {
-            throw new BadRequestException('This email is already registered!')
+    async register(body: RegisterUserDto) {
+        //check if email is in use and have user
+        const user = await this.repo.findOneByEmail(body.email);
+        if (!user) {
+          throw new BadRequestException('No HR record found for this email.');
+        }
+        if (user.password) {
+          throw new BadRequestException('Account already activated.');
         }
         //hash
-        const hashedPassword = await bcrypt.hash(body.password, 10);
+        user.password = await bcrypt.hash(body.password, 10);
         //create and save user
-        let user = {
-            email: body.email,
-            password: hashedPassword, 
-            role: { id: body.roleId } as any, 
-        } as User;
-         user = await this.repo.save(user); 
-
-        const userToken = await this.createToken(user) 
+        const savedUser = await this.repo.save(user); 
+        const userToken = await this.createToken(savedUser) 
         return {
             userToken,
-            user: { id: user.id, email: user.email}
+            user: { id: savedUser.id, email: savedUser.email}
         };
     } 
 
@@ -59,6 +55,12 @@ export class AuthService {
             throw new UnauthorizedException('No account found with this email!');
         }
 
+        if (!user.password) {
+            throw new UnauthorizedException(
+                'Password is not set for this account.',
+            );
+        }
+        
         //compare entered passwords with existing password
         const passwordMatch = await bcrypt.compare(body.password, user.password);
         if (!passwordMatch) {

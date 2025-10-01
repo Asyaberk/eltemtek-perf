@@ -1,10 +1,10 @@
-import { Controller, Get, HttpCode, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, HttpCode, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { User } from '../entities/users.entity';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(CacheInterceptor, ClassSerializerInterceptor)
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
@@ -24,7 +24,7 @@ export class UsersController {
       ],
     },
   })
-  async getAllRoles(): Promise<User[]> {
+  async getAllUsers(): Promise<User[]> {
     return this.userService.findAll();
   }
 }

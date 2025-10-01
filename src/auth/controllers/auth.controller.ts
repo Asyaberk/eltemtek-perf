@@ -1,11 +1,12 @@
 import { Body, ClassSerializerInterceptor, Controller, Get, HttpCode, Post, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { CreateUserDto } from '../../users/dtos/create-user.dto';
 import { LoginUserDto } from '../../users/dtos/login-user.dto';
 import { CurrentUser } from '../../users/decorators/current-user.decorator';
 import { User } from '../../users/entities/users.entity';
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { RegisterUserDto } from '../dtos/register-user.dto';
+import { Response } from 'express';
 
 //We add these because the password field is automatically removed from the response.
 @UseInterceptors(ClassSerializerInterceptor) 
@@ -39,7 +40,7 @@ export class AuthController {
             }
         }
     })
-    async register(@Body() body: CreateUserDto) {
+    async register(@Body() body: RegisterUserDto) {
         return this.authService.register(body);
     }
 

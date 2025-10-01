@@ -24,6 +24,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/kafka/tsconfig.lib.json"
       }
+    },
+    "organisation": {
+      "type": "library",
+      "root": "libs/organisation",
+      "entryFile": "index",
+      "sourceRoot": "libs/organisation/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/organisation/tsconfig.lib.json"
+      }
     }
   }
 }

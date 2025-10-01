@@ -1,14 +1,14 @@
 import { User } from "../../users/entities/users.entity";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterInsert } from "typeorm"; 
 
-@Entity('role')
+@Entity('roles')
 export class Role{
 
     @PrimaryGeneratedColumn()
     id: number;
 
     //role names like user, admin etc
-    @Column()
+    @Column({ unique: true }) 
     name: string;
 
     //There can be more than one user with a role (but a user can have at most one role.) 

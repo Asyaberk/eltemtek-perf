@@ -7,10 +7,6 @@ import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { User } from './users/entities/users.entity';
 import { Role } from './roles/entities/roles.entity';
-import { BookModule } from './books/book.module';
-import { Book } from './books/entities/books.entity';
-import { LibraryModule } from './library/library.module';
-import { Rental } from './library/entities/rental.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
 import { Keyv } from 'keyv';
@@ -19,6 +15,7 @@ import { AppConfigModule } from '@app/config';
 import { HealthController } from './health.controller';
 import { KafkaModule } from '@app/kafka';
 import { TestConsumer } from './consumer';
+import { Department, Office, Tesis, Seflik, Mudurluk } from '@app/organisation';
 
 @Module({
   imports: [
@@ -38,7 +35,15 @@ import { TestConsumer } from './consumer';
       host: process.env.DB_HOST,
       synchronize: true,
       database: process.env.DB_DATABASE,
-      entities: [User, Role, Book, Rental],
+      entities: [
+        User,
+        Role,
+        Department,
+        Office,
+        Tesis,
+        Seflik,
+        Mudurluk, 
+      ],
     }),
     //docker compose up -d --build
     //docker ps
@@ -63,8 +68,6 @@ import { TestConsumer } from './consumer';
     AuthModule,
     UsersModule,
     RolesModule,
-    BookModule,
-    LibraryModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService, TestConsumer],
