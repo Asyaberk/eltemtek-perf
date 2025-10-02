@@ -12,40 +12,25 @@ export class UserRepository {
 
   async find(): Promise<User[]> {
     return this.userRepo.find({
-      select: ['id', 'sicil_no', 'first_name', 'last_name', 'email'],
+      select: ['id', 'sicil_no', 'first_last_name'],
       relations: [
         'role',
         'department',
-        'office',
         'tesis',
         'seflik',
         'mudurluk',
       ],
-      order: { last_name: 'ASC', first_name: 'ASC' },
+      order: { first_last_name: 'ASC' },
     });
   }
 
-  async findOneByEmail(email: string): Promise<User | null> {
-    return this.userRepo.findOne({
-      where: { email },
-      relations: [
-        'role',
-        'department',
-        'office',
-        'tesis',
-        'seflik',
-        'mudurluk',
-      ],
-    });
-  }
-
+  //sicil idye göre YAPIALACAK
   async findOneById(id: number): Promise<User> {
     const user = await this.userRepo.findOne({
       where: { id },
       relations: [
         'role',
         'department',
-        'office',
         'tesis',
         'seflik',
         'mudurluk',

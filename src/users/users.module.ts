@@ -4,20 +4,12 @@ import { UsersController } from './controllers/users.controller';
 import { UsersService } from './services/users.service';
 import { User } from './entities/users.entity';
 import { UserRepository } from './repositories/users.repository';
-import { Department, Office, Tesis, Seflik, Mudurluk } from '@app/organisation';
-import { Role } from 'src/roles/entities/roles.entity';
+import { OrganisationModule } from '@app/organisation';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      User,
-      Role,
-      Department,
-      Office,
-      Tesis,
-      Seflik,
-      Mudurluk,
-    ]),
+    TypeOrmModule.forFeature([User]),
+    OrganisationModule, 
   ],
   controllers: [UsersController],
   //add rolesrepo

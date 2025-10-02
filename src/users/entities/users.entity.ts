@@ -1,8 +1,6 @@
 // src/users/entities/users.entity.ts
 import { AfterInsert, Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index } from "typeorm"; 
-import { Role } from "../../roles/entities/roles.entity";
-import { Exclude } from "class-transformer";
-import { Department, Office, Tesis, Seflik, Mudurluk } from "@app/organisation";
+import { Department, Tesis, Seflik, Mudurluk, Role } from "@app/organisation";
 
 @Entity('users')
 export class User {
@@ -14,46 +12,36 @@ export class User {
   @Column()
   sicil_no: string;
 
+  //adı Soyadı
   @Column()
-  first_name: string;
+  first_last_name: string;
 
-  @Column()
-  last_name: string;
+  //şimdilik şifreye gerek yok gibi
+  // @Exclude()
+  // @Column({ nullable: true })
+  // password?: string;
 
-  @Index({ unique: true })
-  @Column()
-  email: string;
-
-  @Exclude()
-  @Column({ nullable: true })
-  password?: string;
-
-  @ManyToOne(() => Role, (role) => role.users, { nullable: false, eager: true })
-  @JoinColumn({ name: 'role_id' })
-  role: Role;
-
-  //yetkilendirme için olabilir gibi
-  @ManyToOne(() => User, { nullable: true, eager: false })
-  @JoinColumn({ name: 'manager_id' })
-  manager?: User;
-
-  //FKler, ayrı ayrı
+  //bölümü
   @ManyToOne(() => Department, { nullable: false, eager: true })
   @JoinColumn({ name: 'department_id' })
   department: Department;
 
-  @ManyToOne(() => Office, { nullable: true, eager: true })
-  @JoinColumn({ name: 'office_id' })
-  office?: Office;
+  //görevi
+  @ManyToOne(() => Role, (role) => role.users, { nullable: false, eager: true })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 
+  //tesis
   @ManyToOne(() => Tesis, { nullable: true, eager: true })
   @JoinColumn({ name: 'tesis_id' })
   tesis?: Tesis;
 
+  //şeflik
   @ManyToOne(() => Seflik, { nullable: true, eager: true })
   @JoinColumn({ name: 'seflik_id' })
   seflik?: Seflik;
 
+  //müdürlük
   @ManyToOne(() => Mudurluk, { nullable: true, eager: true })
   @JoinColumn({ name: 'mudurluk_id' })
   mudurluk?: Mudurluk;

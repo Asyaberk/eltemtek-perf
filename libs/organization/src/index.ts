@@ -4,5 +4,5 @@ export * from './entities/department.entity';
 export * from './entities/tesis.entity';
 export * from './entities/seflik.entity';
 export * from './entities/mudurluk.entity';
-export * from './entities/office.entity';
+export * from './entities/roles.entity';
 

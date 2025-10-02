@@ -1,24 +1,23 @@
 // src/users/services/users.service.ts
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from '../entities/users.entity';
 import { UserRepository } from '../repositories/users.repository';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { Role } from 'src/roles/entities/roles.entity';
-import { Department, Office, Tesis, Seflik, Mudurluk } from '@app/organisation';
+import { DepartmentRepository } from '@app/organisation/repositories/department.repository';
+import { MudurlukRepository } from '@app/organisation/repositories/mudurluk.repository';
+import { RolesRepository } from '@app/organisation/repositories/roles.repository';
+import { SeflikRepository } from '@app/organisation/repositories/seflik.repository';
+import { TesisRepository } from '@app/organisation/repositories/tesis.repository';
 
 @Injectable()
 export class UsersService {
     constructor(
         private readonly userRepository: UserRepository,
-        @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
-        @InjectRepository(Department)
-        private readonly deptRepo: Repository<Department>,
-        @InjectRepository(Office) private readonly officeRepo: Repository<Office>,
-        @InjectRepository(Tesis) private readonly tesisRepo: Repository<Tesis>,
-        @InjectRepository(Seflik) private readonly seflikRepo: Repository<Seflik>,
-        @InjectRepository(Mudurluk) private readonly mudRepo: Repository<Mudurluk>,
+        private readonly roleRepository: RolesRepository,
+        private readonly departmentRepository: DepartmentRepository,
+        private readonly tesisRepository: TesisRepository,
+        private readonly seflikRepository: SeflikRepository,
+        private readonly mudurlukRepository: MudurlukRepository,
     ) { }
 
     async findAll(): Promise<User[]> {
@@ -30,38 +29,62 @@ export class UsersService {
     }
 
     async create(dto: CreateUserDto): Promise<User> {
-        const role = await this.roleRepo.findOneByOrFail({ id: dto.role_id });
-        const department = await this.deptRepo.findOneByOrFail({
-            id: dto.department_id,
-        });
-
-        const office = dto.office_id
-            ? await this.officeRepo.findOneByOrFail({ id: dto.office_id })
+        const role = dto.role_id
+            ? await this.roleRepository.findById(dto.role_id)
+            : undefined;
+        const department = dto.department_id
+            ? await this.departmentRepository.findById(dto.department_id)
             : undefined;
         const tesis = dto.tesis_id
-            ? await this.tesisRepo.findOneByOrFail({ id: dto.tesis_id })
+            ? await this.tesisRepository.findById(dto.tesis_id)
             : undefined;
         const seflik = dto.seflik_id
-            ? await this.seflikRepo.findOneByOrFail({ id: dto.seflik_id })
+            ? await this.seflikRepository.findById(dto.seflik_id)
             : undefined;
         const mudurluk = dto.mudurluk_id
-            ? await this.mudRepo.findOneByOrFail({ id: dto.mudurluk_id })
+            ? await this.mudurlukRepository.findById(dto.mudurluk_id)
             : undefined;
 
         const user: Partial<User> = {
             sicil_no: dto.sicil_no,
-            first_name: dto.first_name,
-            last_name: dto.last_name,
-            email: dto.email,
-            password: dto.password ?? undefined,
+            first_last_name: dto.first_last_name,
             role,
             department,
-            office,
             tesis,
             seflik,
             mudurluk,
         };
 
         return this.userRepository.save(user);
+    }
+
+    // Excel import için name üzerinden lookup yap
+    async resolveIdsFromNames(
+        departmentName: string,
+        roleName: string,
+        tesisName?: string,
+        seflikName?: string,
+        mudurlukName?: string,
+    ) {
+        const department =
+            await this.departmentRepository.findByName(departmentName);
+        const role = await this.roleRepository.findByName(roleName);
+        const tesis = tesisName
+            ? await this.tesisRepository.findByName(tesisName)
+            : null;
+        const seflik = seflikName
+            ? await this.seflikRepository.findByName(seflikName)
+            : null;
+        const mudurluk = mudurlukName
+            ? await this.mudurlukRepository.findByName(mudurlukName)
+            : null;
+
+        return {
+            department_id: department?.id,
+            role_id: role?.id,
+            tesis_id: tesis?.id,
+            seflik_id: seflik?.id,
+            mudurluk_id: mudurluk?.id,
+        };
     }
 }

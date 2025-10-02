@@ -1,4 +1,4 @@
-import { User } from "../../users/entities/users.entity";
+import { User } from "src/users/entities/users.entity";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterInsert, Unique } from "typeorm"; 
 
 @Entity('roles')
@@ -24,4 +24,5 @@ export class Role {
 
 //verilen dosyayı dbye çekicez mapping ile
 //önce bu
-//npm install xlsx
+//npm install xlsx multer @types/multer --save
+

@@ -2,11 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
 import { User } from './users/entities/users.entity';
-import { Role } from './roles/entities/roles.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { createKeyv } from '@keyv/redis';
 import { Keyv } from 'keyv';
@@ -15,7 +12,7 @@ import { AppConfigModule } from '@app/config';
 import { HealthController } from './health.controller';
 import { KafkaModule } from '@app/kafka';
 import { TestConsumer } from './consumer';
-import { Department, Office, Tesis, Seflik, Mudurluk } from '@app/organisation';
+import { Department, Tesis, Seflik, Mudurluk, Role } from '@app/organisation';
 
 @Module({
   imports: [
@@ -39,7 +36,6 @@ import { Department, Office, Tesis, Seflik, Mudurluk } from '@app/organisation';
         User,
         Role,
         Department,
-        Office,
         Tesis,
         Seflik,
         Mudurluk, 
@@ -65,9 +61,7 @@ import { Department, Office, Tesis, Seflik, Mudurluk } from '@app/organisation';
       },
     }),
 
-    AuthModule,
     UsersModule,
-    RolesModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService, TestConsumer],
