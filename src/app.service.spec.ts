@@ -1,11 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppService } from './app.service';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
-const mockCacheManager = {
-  set: jest.fn(),
-  get: jest.fn(),
-};
 
 describe('AppService', () => {
   let appService: AppService;
@@ -15,11 +10,7 @@ describe('AppService', () => {
       imports: [],
       controllers: [],
       providers: [
-        AppService,
-        {
-          provide: CACHE_MANAGER,
-          useValue: mockCacheManager,
-        },
+        AppService
       ],
     }).compile();
 

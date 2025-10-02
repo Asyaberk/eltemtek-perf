@@ -1,6 +1,6 @@
 // src/users/entities/users.entity.ts
 import { AfterInsert, Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index } from "typeorm"; 
-import { Department, Tesis, Seflik, Mudurluk, Role } from "@app/organisation";
+import { Department, Tesis, Seflik, Mudurluk, Role } from  "libs/organisation/src";
 
 @Entity('users')
 export class User {
@@ -22,14 +22,14 @@ export class User {
   // password?: string;
 
   //bölümü
-  @ManyToOne(() => Department, { nullable: false, eager: true })
+  @ManyToOne(() => Department, { nullable: true, eager: true })
   @JoinColumn({ name: 'department_id' })
-  department: Department;
+  department?: Department;
 
   //görevi
-  @ManyToOne(() => Role, (role) => role.users, { nullable: false, eager: true })
+  @ManyToOne(() => Role, (role) => role.users, { nullable: true, eager: true })
   @JoinColumn({ name: 'role_id' })
-  role: Role;
+  role?: Role;
 
   //tesis
   @ManyToOne(() => Tesis, { nullable: true, eager: true })

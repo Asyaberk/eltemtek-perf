@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Role } from '@app/organisation/entities/roles.entity';
+import { Role } from '../entities/roles.entity';
 
 @Injectable()
 // Custom role repository

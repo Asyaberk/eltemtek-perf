@@ -4,20 +4,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/users.entity';
-import { CacheModule } from '@nestjs/cache-manager';
-import { createKeyv } from '@keyv/redis';
-import { Keyv } from 'keyv';
-import { CacheableMemory } from 'cacheable';
 import { AppConfigModule } from '@app/config';
 import { HealthController } from './health.controller';
-import { KafkaModule } from '@app/kafka';
-import { TestConsumer } from './consumer';
-import { Department, Tesis, Seflik, Mudurluk, Role } from '@app/organisation';
+import { Department, Tesis, Seflik, Mudurluk, Role } from 'libs/organisation/src';
 
 @Module({
   imports: [
-    //add kafka
-    KafkaModule,
 
     //ConfigModule.forRoot({ isGlobal: true }),
     //i made my own config lib
@@ -46,24 +38,9 @@ import { Department, Tesis, Seflik, Mudurluk, Role } from '@app/organisation';
     //docker logs -f nestjs-project-app
     //docker compose down
 
-    //Redis caching
-    CacheModule.registerAsync({
-      isGlobal: true,
-      useFactory: async () => {
-        return {
-          stores: [
-            new Keyv({
-              store: new CacheableMemory({ ttl: 10_000, lruSize: 5000 }),
-            }),
-            createKeyv(process.env.REDIS_URL || 'redis://localhost:6379'),
-          ],
-        };
-      },
-    }),
-
     UsersModule,
   ],
   controllers: [AppController, HealthController],
-  providers: [AppService, TestConsumer],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -17,6 +17,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  seed:
+    build: .
+    command: >
+      sh -c "
+        npx ts-node -r tsconfig-paths/register scripts/organization.seed.ts &&
+        npx ts-node -r tsconfig-paths/register scripts/seed.ts
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+    networks: [nestjs-project-net]
+
   app:
     build:
       context: .
@@ -29,13 +49,10 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
-      - REDIS_URL=redis://redis:6379
     ports:
       - "${PORT}:${PORT}"
     depends_on:
       db:
-        condition: service_started
-      redis:
         condition: service_started
     volumes:
       - .:/app
@@ -58,46 +75,6 @@ services:
       - "${PGADMIN_HOST_PORT}:${PGADMIN_CONTAINER_PORT}"
     depends_on:
       - db
-    networks: [nestjs-project-net]
-  
-  redis:
-    image: redis:7-alpine
-    container_name: nestjs-project-redis
-    ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
-    restart: always
-    networks: [nestjs-project-net]
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-    container_name: nestjs-project-zookeper
-    ports:
-      - "2181:2181"
-    networks: [nestjs-project-net]
-
-  kafka:
-    image: wurstmeister/kafka:2.11-1.1.1
-    container_name: nestjs-project-kafka
-    ports:
-      - "9092:9092"
-    links:
-      - zookeeper
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      KAFKA_DELETE_TOPIC_ENABLE: 'true'
-      KAFKA_CREATE_TOPICS: "topic-test"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - zookeeper
     networks: [nestjs-project-net]
     
   #KAFKA MOBİL ERİYE BAĞLANINCA ÇALIŞIYOR VE BUNU ÖNCE EXPORTLAMAN LAZIM:
