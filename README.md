@@ -1,4 +1,4 @@
-<!-- <p align="center">
+<p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
@@ -21,6 +21,7 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
+<!-- 
 # 📚 NestJS User & Library Management Project
 
 [![NestJS](https://img.shields.io/badge/NestJS-Backend-red)](https://nestjs.com/)  
@@ -184,4 +185,5 @@ npm run start:dev
 This project demonstrates how **NestJS integrates with PostgreSQL, Redis, and Kafka**, orchestrated
 via Docker Compose.
 It is a **great starting point** for anyone wanting to learn **microservice-related patterns** and
-**event-driven architectures** while keeping everything structured under NestJS modules. -->
+**event-driven architectures** while keeping everything structured under NestJS modules.
+ -->

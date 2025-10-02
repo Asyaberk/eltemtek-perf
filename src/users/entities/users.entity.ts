@@ -9,6 +9,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  //personel nosu
   @Index({ unique: true })
   @Column()
   sicil_no: string;
@@ -25,12 +26,18 @@ export class User {
 
   @Exclude()
   @Column({ nullable: true })
-  password?: string; 
+  password?: string;
 
   @ManyToOne(() => Role, (role) => role.users, { nullable: false, eager: true })
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
+  //yetkilendirme için olabilir gibi
+  @ManyToOne(() => User, { nullable: true, eager: false })
+  @JoinColumn({ name: 'manager_id' })
+  manager?: User;
+
+  //FKler, ayrı ayrı
   @ManyToOne(() => Department, { nullable: false, eager: true })
   @JoinColumn({ name: 'department_id' })
   department: Department;

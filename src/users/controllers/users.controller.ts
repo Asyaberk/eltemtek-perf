@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, HttpCode, UseInterceptors, ClassSerializerInterceptor, Param } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { User } from '../entities/users.entity';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -26,5 +26,12 @@ export class UsersController {
   })
   async getAllUsers(): Promise<User[]> {
     return this.userService.findAll();
+  }
+
+  @Get(':id')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Get single user by ID' })
+  async getUserById(@Param('id') id: number): Promise<User> {
+    return this.userService.findOneById(id);
   }
 }
