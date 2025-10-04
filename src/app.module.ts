@@ -6,7 +6,8 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entities/users.entity';
 import { AppConfigModule } from '@app/config';
 import { HealthController } from './health.controller';
-import { Department, Tesis, Seflik, Mudurluk, Role } from 'libs/organisation/src';
+import { Department, Tesis, Seflik, Mudurluk, Role, OrganisationModule } from 'libs/organisation/src';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -39,6 +40,8 @@ import { Department, Tesis, Seflik, Mudurluk, Role } from 'libs/organisation/src
     //docker compose down
 
     UsersModule,
+    AuthModule,
+    OrganisationModule
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

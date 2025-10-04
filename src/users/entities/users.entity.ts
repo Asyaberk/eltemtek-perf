@@ -1,6 +1,7 @@
 // src/users/entities/users.entity.ts
 import { AfterInsert, Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index } from "typeorm"; 
 import { Department, Tesis, Seflik, Mudurluk, Role } from  "libs/organisation/src";
+import { Exclude } from "class-transformer";
 
 @Entity('users')
 export class User {
@@ -16,10 +17,9 @@ export class User {
   @Column()
   first_last_name: string;
 
-  //şimdilik şifreye gerek yok gibi
-  // @Exclude()
-  // @Column({ nullable: true })
-  // password?: string;
+  @Exclude()
+  @Column({ nullable: true })
+  password?: string;
 
   //bölümü
   @ManyToOne(() => Department, { nullable: true, eager: true })

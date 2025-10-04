@@ -36,13 +36,20 @@ export class UserRepository {
     return user;
   }
 
+  async findOneBySicilNo(sicil_no: string): Promise<User | null> {
+    return this.userRepo.findOne({
+      where: { sicil_no },
+      relations: ['role', 'department', 'tesis', 'seflik', 'mudurluk'],
+    });
+  }
+
   async save(user: Partial<User>): Promise<User> {
     const entity = this.userRepo.create(user);
     return this.userRepo.save(entity);
   }
 
   //file upload tek seferlik endpointsiz
-   async importFromExcel(filePath: string): Promise<User[]> {
+  async importFromExcel(filePath: string): Promise<User[]> {
     const workbook = XLSX.readFile(filePath); // ✅ artık buffer değil, dosya yolu
     const sheetName = workbook.SheetNames[0];
     const worksheet = XLSX.utils.sheet_to_json<any>(workbook.Sheets[sheetName]);
@@ -63,7 +70,6 @@ export class UserRepository {
         ? (await this.mudurlukRepo.findByName(row['Müdürlük'])) || undefined
         : undefined;
 
-
       entities.push({
         sicil_no: String(row['Sicil No']).trim(),
         first_last_name: String(row['Adı Soyadı']).trim(),
@@ -79,4 +85,7 @@ export class UserRepository {
     return this.userRepo.save(createdEntities);
   }
 
+  async deleteById(id: number): Promise<void> {
+    await this.userRepo.delete(id);
+  }
 }

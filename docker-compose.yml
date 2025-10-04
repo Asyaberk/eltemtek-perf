@@ -18,12 +18,15 @@ services:
       timeout: 5s
       retries: 5
   
+  #Bu seed containerı databasee otomatik veri yüklemek için. aslında bir kere yüklendiği için silinebilir ama öğrenmek için kalacak
   seed:
     build: .
     command: >
       sh -c "
         npx ts-node -r tsconfig-paths/register scripts/organization.seed.ts &&
         npx ts-node -r tsconfig-paths/register scripts/seed.ts
+        npx ts-node -r tsconfig-paths/register scripts/add-role.ts    
+        npx ts-node -r tsconfig-paths/register scripts/add_ik_user.seed.ts                    
       "
     depends_on:
       db:

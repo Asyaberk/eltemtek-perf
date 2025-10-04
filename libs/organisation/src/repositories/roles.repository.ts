@@ -24,7 +24,7 @@ export class RolesRepository {
   }
     
   async save(name: string): Promise<Role> {
-    //check if role name exists(for the safety of the name 'admin')
+    //check if role name exists(for the safety of the name 'İnsan Kaynakları')
     const existing = await this.roleRepo.findOne({ where: { name } });
     if (existing) {
       throw new BadRequestException(`Role '${name}' already exists!`);

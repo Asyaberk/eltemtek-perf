@@ -1,4 +1,3 @@
-// src/users/dtos/create-user.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsInt,
@@ -11,24 +10,23 @@ import { Type } from 'class-transformer';
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Personel sicil numarası', example: 'A12345' })
+  @ApiProperty({ description: 'Personel sicil numarası', example: '518' })
   sicil_no: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Adı Soyadı', example: 'Asya Berk' })
+  @ApiProperty({ description: 'Adı Soyadı', example: 'Adil Yasin BAŞTUĞ' })
   first_last_name: string;
 
-  // Auth tarafı için şifre opsiyonel (import’ta olmayabilir)
-  // @IsString()
-  // @IsOptional()
-  // @ApiPropertyOptional({
-  //   description: 'Parola (opsiyonel, importta boş gelebilir)',
-  //   example: 'password123',
-  // })
-  // password?: string;
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'Parola (opsiyonel, import sırasında boş olabilir)',
+    example: 'password123',
+  })
+  password?: string;
 
-  // FK’ler (Excel’den isimle geleceği için import aşamasında id’ye çevireceğiz)
+  // Foreign Keys
   @Type(() => Number)
   @IsInt()
   @ApiProperty({ description: 'Department ID', example: 10 })
