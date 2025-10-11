@@ -8,6 +8,7 @@ import { AppConfigModule } from '@app/config';
 import { HealthController } from './health.controller';
 import { Department, Tesis, Seflik, Mudurluk, Role, OrganisationModule } from 'libs/organisation/src';
 import { AuthModule } from './auth/auth.module';
+import { QuestionsModule } from './questions/questions.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { AuthModule } from './auth/auth.module';
 
     UsersModule,
     AuthModule,
-    OrganisationModule
+    OrganisationModule,
+    QuestionsModule
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
