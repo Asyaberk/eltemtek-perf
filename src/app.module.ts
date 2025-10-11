@@ -9,6 +9,7 @@ import { HealthController } from './health.controller';
 import { Department, Tesis, Seflik, Mudurluk, Role, OrganisationModule } from 'libs/organisation/src';
 import { AuthModule } from './auth/auth.module';
 import { QuestionsModule } from './questions/questions.module';
+import { Question } from './questions/entities/question.entity';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { QuestionsModule } from './questions/questions.module';
         Tesis,
         Seflik,
         Mudurluk, 
+        Question,
       ],
     }),
     //docker compose up -d --build

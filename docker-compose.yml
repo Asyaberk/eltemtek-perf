@@ -26,7 +26,8 @@ services:
         npx ts-node -r tsconfig-paths/register scripts/organization.seed.ts &&
         npx ts-node -r tsconfig-paths/register scripts/seed.ts
         npx ts-node -r tsconfig-paths/register scripts/add-role.ts    
-        npx ts-node -r tsconfig-paths/register scripts/add_ik_user.seed.ts                    
+        npx ts-node -r tsconfig-paths/register scripts/add_ik_user.seed.ts   
+        npx ts-node -r tsconfig-paths/register scripts/questions.seed.ts                 
       "
     depends_on:
       db:
