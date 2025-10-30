@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, HttpCode, Param, Post, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, Param, Post, Put, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { CreateUserDto } from '../../users/dtos/create-user.dto';
 import { LoginUserDto } from 'src/users/dtos/login-user.dto';
@@ -55,7 +55,7 @@ export class AuthController {
   //kullanıcı update etme(ik)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('İnsan Kaynakları')
-  @Post('/update/:id')
+  @Put('/update/:id')
   @HttpCode(200)
   @ApiOperation({ summary: 'Update user information (HR only)' })
   @ApiOkResponse({
@@ -101,7 +101,7 @@ export class AuthController {
   //kullanıcı silme(ik)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('İnsan Kaynakları')
-  @Post('/delete/:id')
+  @Delete('/delete/:id')
   @HttpCode(200)
   @ApiOperation({ summary: 'Delete user by ID (HR only)' })
   @ApiOkResponse({
@@ -171,7 +171,7 @@ export class AuthController {
   }
 
   //change password(for both new and old users that has no password or wnats a change)
-  @Post('/change-password')
+  @Put('/change-password')
   @HttpCode(200)
   @ApiOperation({ summary: 'Set or update password for a user' })
   @ApiBody({
