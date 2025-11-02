@@ -1,5 +1,5 @@
 // src/users/entities/users.entity.ts
-import { AfterInsert, Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index } from "typeorm"; 
+import { AfterInsert, Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn, Index } from "typeorm"; 
 import { Department, Tesis, Seflik, Mudurluk, Role } from  "libs/organisation/src";
 import { Exclude } from "class-transformer";
 
@@ -20,6 +20,29 @@ export class User {
   @Exclude()
   @Column({ nullable: true })
   password?: string;
+
+  /////////////////
+
+  //kıdem tarihi
+  @Column({ type: 'date', nullable: true })
+  hireDate?: Date;
+
+  //değerlendirici
+  @ManyToOne(() => User, (evaluator) => evaluator.evaluatedEmployees, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({
+    name: 'evaluator_sicil_no', 
+    referencedColumnName: 'sicil_no', 
+  })
+  evaluatedBy: User | null;
+
+  //column değil ilişki için
+  @OneToMany(() => User, (employee) => employee.evaluatedBy)
+  evaluatedEmployees?: User[];
+
+  /////////////////
 
   //bölümü
   @ManyToOne(() => Department, { nullable: true, eager: true })

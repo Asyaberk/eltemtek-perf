@@ -133,8 +133,8 @@ export class AuthService {
   }
 
   //update function
-  async updateUser(id: number, body: Partial<CreateUserDto>) {
-    const user = await this.repo.findOneById(id);
+  async updateUser(id: string, body: Partial<CreateUserDto>) {
+    const user = await this.repo.findOneBySicilNo(id);
     if (!user) throw new NotFoundException('User not found.');
 
     //parola güncellenecekse hashlemek gerek
@@ -163,8 +163,8 @@ export class AuthService {
   }
 
   //delete function
-  async deleteUser(id: number) {
-    const user = await this.repo.findOneById(id);
+  async deleteUser(id: string) {
+    const user = await this.repo.findOneBySicilNo(id);
     if (!user) throw new NotFoundException('User not found.');
 
     await this.repo.deleteById(id);

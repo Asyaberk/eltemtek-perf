@@ -92,7 +92,7 @@ export class AuthController {
     },
   })
   async updateUser(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() body: Partial<CreateUserDto>,
   ) {
     return this.authService.updateUser(id, body);
@@ -110,7 +110,7 @@ export class AuthController {
       example: { message: 'User with ID 12 deleted successfully.' },
     },
   })
-  async deleteUser(@Param('id') id: number) {
+  async deleteUser(@Param('id') id: string) {
     return this.authService.deleteUser(id);
   }
 

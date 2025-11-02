@@ -1,7 +1,7 @@
 import { Controller, Get, HttpCode, UseInterceptors, ClassSerializerInterceptor, Param } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { User } from '../entities/users.entity';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
@@ -44,7 +44,7 @@ export class UsersController {
   }
 
   //list spesific the user
-  @Get(':id')
+  @Get(':sicilNo')
   @HttpCode(200)
   @ApiOperation({ summary: 'Get single user by ID' })
   @ApiOkResponse({
@@ -62,7 +62,41 @@ export class UsersController {
       },
     },
   })
-  async getUserById(@Param('id') id: number): Promise<User> {
-    return this.userService.findOneById(id);
+  async getUserBySicilNo(@Param('sicilNo') sicilNo: string): Promise<User> {
+    return this.userService.findOneBySicilNo(sicilNo);
+  }
+
+  //list evaluators personels
+  @Get('evaluated-by/:evaluatorSicilNo')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Get all employees evaluated by a specific user (using Sicil No)',
+  })
+  @ApiParam({
+    name: 'evaluatorSicilNo',
+    type: 'string',
+    description:
+      'The Sicil No of the evaluator (Yönetici) whose assigned employees are to be fetched.',
+    example: '00518',
+  })
+  @ApiOkResponse({
+    description:
+      'Returns a list of users who are evaluated by the given Sicil No.',
+    schema: {
+      type: 'array',
+      example: [
+        {
+          id: 10,
+          sicil_no: '00850',
+          first_last_name: 'Ali BAŞARI',
+          hireDate: '2020-08-17',
+        },
+      ],
+    },
+  })
+  async getEvaluatedEmployees(
+    @Param('evaluatorSicilNo') evaluatorSicilNo: string,
+  ): Promise<User[]> {
+    return this.userService.findEmployeesByEvaluatorId(evaluatorSicilNo);
   }
 }

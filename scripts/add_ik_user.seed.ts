@@ -1,3 +1,5 @@
+//npx ts-node -r tsconfig-paths/register scripts/add_ik_user.seed.ts   
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
 import * as bcrypt from 'bcrypt';

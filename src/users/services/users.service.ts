@@ -1,5 +1,5 @@
 // src/users/services/users.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../entities/users.entity';
 import { UserRepository } from '../repositories/users.repository';
 import { CreateUserDto } from '../dtos/create-user.dto';
@@ -21,8 +21,17 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findOneById(id: number): Promise<User> {
-    return this.userRepository.findOneById(id);
+  async findOneBySicilNo(sicilNo: string): Promise<User> {
+    const user = await this.userRepository.findOneBySicilNo(sicilNo);
+    if (!user)
+      throw new NotFoundException(`User with Sicil No '${sicilNo}' not found.`);
+    return user;
+  }
+
+  async findEmployeesByEvaluatorId(evaluatorSicilNo: string): Promise<User[]> {
+    return this.userRepository.findEvaluatedEmployeesByEvaluatorId(
+      evaluatorSicilNo,
+    );
   }
 
   async create(dto: CreateUserDto): Promise<User> {
@@ -82,14 +91,6 @@ export class UsersService {
       tesis_id: tesis?.id,
       seflik_id: seflik?.id,
       mudurluk_id: mudurluk?.id,
-    };
-  }
-
-  async importFromExcel(filePath: string) {
-    const users = await this.userRepository.importFromExcel(filePath);
-    return {
-      message: `${users.length} users imported successfully`,
-      users,
     };
   }
 }
