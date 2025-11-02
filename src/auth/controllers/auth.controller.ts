@@ -7,7 +7,7 @@ import { User } from '../../users/entities/users.entity';
 import { JwtAuthGuard } from '../../guards/auth.guard';
 import { RolesGuard } from '../../guards/roles.guard';
 import { Roles } from '../decorators/roles.decorator';
-import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 
 //We add these because the password field is automatically removed from the response.
@@ -26,14 +26,23 @@ export class AuthController {
   @Post('/register')
   @HttpCode(201)
   @ApiOperation({
-    summary: 'Register a new user with sicil_no and password (HR only)',
+    summary: 'Register a new user (HR only)',
+    description:
+      'Registers a new employee with sicil_no, password, and optional department/role fields. Only HR users can perform this action.',
   })
   @ApiCreatedResponse({
     description: 'User registered successfully.',
     schema: {
       example: {
-        userToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-        user: { id: 1, sicil_no: '518' },
+        message: 'User registered successfully.',
+        user: {
+          id: 1,
+          sicil_no: '00518',
+          first_last_name: 'Asya Berk',
+          hireDate: '2024-08-15',
+          department: { id: 3, department_name: 'İletişim' },
+          role: { id: 2, name: 'Teknik Şef' },
+        },
       },
     },
   })
@@ -55,9 +64,18 @@ export class AuthController {
   //kullanıcı update etme(ik)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('İnsan Kaynakları')
-  @Put('/update/:id')
+  @Put('/update/:sicilNo')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Update user information (HR only)' })
+  @ApiOperation({
+    summary: 'Update user information (HR only)',
+    description:
+      'Allows HR to update user data (e.g. name, department, role, password, hire date, evaluatedBySicilNo).',
+  })
+  @ApiParam({
+    name: 'sicilNo',
+    description: 'Sicil number (employee ID) of the user to update.',
+    example: '00518',
+  })
   @ApiOkResponse({
     description: 'User updated successfully.',
     schema: {
@@ -65,71 +83,85 @@ export class AuthController {
         message: 'User updated successfully.',
         user: {
           id: 1,
-          sicil_no: 'IK100',
-          first_last_name: 'İhsan Kaya',
-          department: { id: 21, name: 'İnsan Kaynakları' },
-          role: { id: 19, name: 'İdari Personel' },
+          sicil_no: '00518',
+          first_last_name: 'Asya Berk',
+          hireDate: '2024-08-15',
+          department: { id: 3, department_name: 'İletişim' },
+          role: { id: 2, name: 'Teknik Şef' },
         },
       },
     },
-  })
-  @ApiBadRequestResponse({
-    description: 'Invalid update data.',
   })
   @ApiBody({
     description: 'Fields that can be updated by HR.',
     schema: {
       example: {
-        sicil_no: 'IK101',
-        first_last_name: 'İhsan KAYA',
-        password: 'newSecurePass123',
-        department_id: 22,
-        role_id: 18,
-        tesis_id: 2,
-        seflik_id: 11,
-        mudurluk_id: 3,
+        first_last_name: 'Asya Berk Güncellenmiş',
+        hireDate: '2024-09-01',
+        evaluatedBySicilNo: '00007',
+        department_id: 3,
+        role_id: 2,
+        tesis_id: 1,
       },
     },
   })
   async updateUser(
-    @Param('id') id: string,
+    @Param('sicilNo') sicilNo: string,
     @Body() body: Partial<CreateUserDto>,
   ) {
-    return this.authService.updateUser(id, body);
+    return this.authService.updateUser(sicilNo, body);
   }
 
   //kullanıcı silme(ik)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('İnsan Kaynakları')
-  @Delete('/delete/:id')
+  @Delete('/delete/:sicilNo')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Delete user by ID (HR only)' })
+  @ApiOperation({
+    summary: 'Delete user (HR only)',
+    description:
+      'Deletes a user by their Sicil No. Only HR can perform this action.',
+  })
+  @ApiParam({
+    name: 'sicilNo',
+    description: 'Sicil number (employee ID) of the user to delete.',
+    example: '00518',
+  })
   @ApiOkResponse({
     description: 'User deleted successfully.',
     schema: {
-      example: { message: 'User with ID 12 deleted successfully.' },
+      example: { message: 'User with Sicil No 00518 deleted successfully.' },
     },
   })
-  async deleteUser(@Param('id') id: string) {
-    return this.authService.deleteUser(id);
+  async deleteUser(@Param('sicilNo') sicilNo: string) {
+    return this.authService.deleteUser(sicilNo);
   }
 
   //login function
   @Post('/login')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Login with sicil_no and password' })
+  @ApiOperation({
+    summary: 'Login with Sicil No and password',
+    description:
+      'Authenticates a user using Sicil No and password, then returns a JWT token (stored in HTTP-only cookie).',
+  })
   @ApiBody({ type: LoginUserDto })
   @ApiOkResponse({
     description: 'User logged in successfully.',
     schema: {
       example: {
         message: 'SUCCESS: Logged in!',
-        user: { id: 1, sicil_no: '518', role: 'İdari Personel' },
+        user: {
+          id: 1,
+          sicil_no: '00518',
+          first_last_name: 'Asya Berk',
+          role: { id: 2, name: 'Teknik Şef' },
+        },
       },
     },
   })
   @ApiUnauthorizedResponse({
-    description: 'Login failed: Invalid sicil_no or password.',
+    description: 'Invalid credentials.',
     schema: {
       example: {
         statusCode: 401,
@@ -149,7 +181,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('/logout')
   @HttpCode(200)
-  @ApiOperation({ summary: 'User logout' })
+  @ApiOperation({
+    summary: 'Logout the currently authenticated user',
+    description: 'Clears the JWT cookie and logs the user out.',
+  })
   @ApiOkResponse({
     description: 'User logged out successfully.',
     schema: {
@@ -157,14 +192,7 @@ export class AuthController {
     },
   })
   @ApiUnauthorizedResponse({
-    description: 'Unauthorized: No active session.',
-    schema: {
-      example: {
-        statusCode: 401,
-        message: 'Unauthorized: No active session.',
-        error: 'Unauthorized',
-      },
-    },
+    description: 'No active session or invalid token.',
   })
   logout(@Res({ passthrough: true }) response: Response) {
     return this.authService.logout(response);
@@ -221,25 +249,23 @@ export class AuthController {
   @Get('/whoami')
   @HttpCode(200)
   @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiOperation({
+    summary: 'Get current authenticated user',
+    description: 'Returns info about the currently logged-in user.',
+  })
   @ApiOkResponse({
     description: 'Returns the details of the currently logged-in user.',
     schema: {
       example: {
         id: 1,
-        email: 'user@example.com',
+        sicil_no: '00518',
+        first_last_name: 'Asya Berk',
         role: { name: 'İnsan Kaynakları' },
       },
     },
   })
   @ApiUnauthorizedResponse({
     description: 'Unauthorized: Token is missing or invalid.',
-    schema: {
-      example: {
-        statusCode: 401,
-        message: 'Unauthorized',
-        error: 'Unauthorized',
-      },
-    },
   })
   whoAmI(@CurrentUser() user: User) {
     return user;

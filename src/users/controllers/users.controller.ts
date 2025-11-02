@@ -1,7 +1,7 @@
 import { Controller, Get, HttpCode, UseInterceptors, ClassSerializerInterceptor, Param } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { User } from '../entities/users.entity';
-import { ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
@@ -19,22 +19,34 @@ export class UsersController {
       type: 'array',
       example: [
         {
-          sicil_no: 1123,
+          id: 1,
+          sicil_no: '00518',
           first_last_name: 'Asya Berk',
-          department: { id: 1, name: 'Ekat Şefliği' },
-          role: { id: 1, name: 'Müdür Teknik' },
-          tesis: { id: 1, name: 'Merkez Ankara' },
-          seflik: { id: 1, name: 'Ekat Şefliği' },
-          mudurluk: { id: 1, name: 'Enerji ve İletişim Müdürlüğü' },
+          hireDate: '2024-08-15',
+          evaluatedBy: {
+            sicil_no: '00007',
+            first_last_name: 'Talha Özkan',
+          },
+          department: { id: 3, department_name: 'İletişim' },
+          role: { id: 2, name: 'Teknik Şef' },
+          tesis: { id: 1, tesis_name: 'Merkez Ankara' },
+          seflik: { id: 4, seflik_name: 'Ekat Şefliği' },
+          mudurluk: { id: 2, mudurluk_name: 'Enerji Müdürlüğü' },
         },
         {
-          sicil_no: 2234,
-          first_last_name: 'Berk Asya',
-          department: { id: 1, name: 'Müdür Teknik' },
-          role: { id: 2, name: 'Teknik Şef' },
-          tesis: { id: 1, name: 'Merkez Ankara' },
-          seflik: { id: 1, name: 'Ekat Şefliği' },
-          mudurluk: { id: 1, name: 'Enerji ve İletişim Müdürlüğü' },
+          id: 2,
+          sicil_no: '00519',
+          first_last_name: 'Adil Yasin BAŞTUĞ',
+          hireDate: '2024-09-01',
+          evaluatedBy: {
+            sicil_no: '00007',
+            first_last_name: 'Talha Özkan',
+          },
+          department: { id: 1, department_name: 'Teknik Destek' },
+          role: { id: 1, name: 'Teknik Personel' },
+          tesis: { id: 1, tesis_name: 'Merkez Ankara' },
+          seflik: null,
+          mudurluk: null,
         },
       ],
     },
@@ -46,21 +58,39 @@ export class UsersController {
   //list spesific the user
   @Get(':sicilNo')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Get single user by ID' })
+  @ApiOperation({
+    summary: 'Get single user by Sicil No',
+    description:
+      'Fetches detailed information of a single user identified by their Sicil No (employee number).',
+  })
+  @ApiParam({
+    name: 'sicilNo',
+    type: 'string',
+    description: 'The Sicil No (employee number) of the user to fetch.',
+    example: '00518',
+  })
   @ApiOkResponse({
-    description: 'Returns a user by ID.',
+    description: 'Returns detailed information of a single user.',
     schema: {
       example: {
         id: 1,
-        sicil_no: 1123,
+        sicil_no: '00518',
         first_last_name: 'Asya Berk',
-        department: { id: 1, name: 'Ekat Şefliği' },
-        role: { id: 1, name: 'Müdür Teknik' },
-        tesis: { id: 1, name: 'Merkez Ankara' },
-        seflik: { id: 1, name: 'Ekat Şefliği' },
-        mudurluk: { id: 1, name: 'Enerji ve İletişim Müdürlüğü' },
+        hireDate: '2024-08-15',
+        evaluatedBy: {
+          sicil_no: '00007',
+          first_last_name: 'Talha Özkan',
+        },
+        department: { id: 3, department_name: 'İletişim' },
+        role: { id: 2, name: 'Teknik Şef' },
+        tesis: { id: 1, tesis_name: 'Merkez Ankara' },
+        seflik: { id: 4, seflik_name: 'Ekat Şefliği' },
+        mudurluk: { id: 2, mudurluk_name: 'Enerji Müdürlüğü' },
       },
     },
+  })
+  @ApiNotFoundResponse({
+    description: 'User with given Sicil No not found.',
   })
   async getUserBySicilNo(@Param('sicilNo') sicilNo: string): Promise<User> {
     return this.userService.findOneBySicilNo(sicilNo);
@@ -70,18 +100,21 @@ export class UsersController {
   @Get('evaluated-by/:evaluatorSicilNo')
   @HttpCode(200)
   @ApiOperation({
-    summary: 'Get all employees evaluated by a specific user (using Sicil No)',
+    summary: 'Get all employees evaluated by a specific user',
+    description:
+      'Fetches all users whose `evaluatedBy` field matches the provided evaluator Sicil No. ' +
+      'Applies the business rule that only users employed for 2+ months can be evaluated.',
   })
   @ApiParam({
     name: 'evaluatorSicilNo',
     type: 'string',
     description:
-      'The Sicil No of the evaluator (Yönetici) whose assigned employees are to be fetched.',
-    example: '00518',
+      'The Sicil No of the evaluator (Yönetici) whose assigned employees will be listed.',
+    example: '00007',
   })
   @ApiOkResponse({
     description:
-      'Returns a list of users who are evaluated by the given Sicil No.',
+      'Returns a list of users who are evaluated by the given Sicil No (yönetici).',
     schema: {
       type: 'array',
       example: [
@@ -90,6 +123,20 @@ export class UsersController {
           sicil_no: '00850',
           first_last_name: 'Ali BAŞARI',
           hireDate: '2020-08-17',
+          evaluatedBy: {
+            sicil_no: '00007',
+            first_last_name: 'Talha Özkan',
+          },
+        },
+        {
+          id: 11,
+          sicil_no: '00851',
+          first_last_name: 'Zeynep ARAS',
+          hireDate: '2022-03-05',
+          evaluatedBy: {
+            sicil_no: '00007',
+            first_last_name: 'Talha Özkan',
+          },
         },
       ],
     },

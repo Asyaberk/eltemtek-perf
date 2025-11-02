@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/users.entity';
@@ -59,10 +59,10 @@ export class UserRepository {
     });
   }
 
-  async findOneBySicilNo(sicil_no: string): Promise<User> {
+  async findOneBySicilNo(sicil_no: string): Promise<User | null> {
     const normalizedSicilNo = this.padSicilNo(sicil_no);
 
-    const user = await this.userRepo.findOne({
+    return this.userRepo.findOne({
       where: { sicil_no: normalizedSicilNo },
       relations: [
         'role',
@@ -73,9 +73,6 @@ export class UserRepository {
         'evaluatedBy',
       ],
     });
-    if (!user)
-      throw new NotFoundException(`User with ID '${sicil_no}' not found.`);
-    return user;
   }
 
   async save(user: Partial<User>): Promise<User> {

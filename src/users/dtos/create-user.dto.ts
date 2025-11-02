@@ -4,13 +4,17 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsDateString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'Personel sicil numarası', example: '518' })
+  @ApiProperty({
+    description: 'Personelin 5 basamaklı sicil numarası',
+    example: '00518',
+  })
   sicil_no: string;
 
   @IsString()
@@ -26,15 +30,35 @@ export class CreateUserDto {
   })
   password?: string;
 
+  @IsDateString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'İşe giriş tarihi (YYYY-MM-DD formatında)',
+    example: '2024-01-15',
+  })
+  hireDate?: string;
+
+  // 👇 evaluatedBy alanı: başka bir user’ı (yönetici) temsil ediyor
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description:
+      'Değerlendiren yöneticinin sicil numarası (evaluator_sicil_no alanına yazılır)',
+    example: '00102',
+  })
+  evaluatedBySicilNo?: string;
+
   // Foreign Keys
   @Type(() => Number)
   @IsInt()
-  @ApiProperty({ description: 'Department ID', example: 10 })
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Department ID', example: 10 })
   department_id?: number;
 
   @Type(() => Number)
   @IsInt()
-  @ApiProperty({ description: 'Role ID', example: 1 })
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Role ID', example: 1 })
   role_id?: number;
 
   @Type(() => Number)

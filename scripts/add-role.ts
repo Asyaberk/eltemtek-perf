@@ -1,3 +1,4 @@
+//npx ts-node -r tsconfig-paths/register scripts/add-role.ts   
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
 import { RolesRepository } from 'libs/organisation/src';
