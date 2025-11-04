@@ -28,16 +28,6 @@ export class WeightsService {
     return item;
   }
 
-  //Yeni weight oluştur
-  async create(roleId: number, questionId: number, weight: number) {
-    const newWeight = this.repo.create({
-      role: { id: roleId } as any,
-      question: { id: questionId } as any,
-      weight,
-    });
-    return this.repo.save(newWeight);
-  }
-
   //Weight güncelle
   async update(id: number, weight: number) {
     const item = await this.findOne(id);
@@ -45,8 +35,4 @@ export class WeightsService {
     return this.repo.save(item);
   }
 
-  //Weight sil
-  async delete(id: number) {
-    await this.repo.delete(id);
-  }
 }

@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, HttpCode } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { Controller, Get, Put, Param, Body, HttpCode, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { WeightsService } from '../services/weights.service';
+import { UpdateWeightDto } from '../dtos/weigths.dto';
 
 @ApiTags('Weights')
 @Controller('weights')
@@ -47,24 +48,6 @@ export class WeightsController {
     return this.service.findOne(id);
   }
 
-  //Yeni weight oluştur
-  @Post()
-  @HttpCode(201)
-  @ApiOperation({ summary: 'Create new weight for a role-question pair' })
-  @ApiCreatedResponse({
-    description: 'Creates a new weight entry.',
-    schema: {
-      example: {
-        id: 5,
-        role: { id: 2, name: 'Şef' },
-        question: { id: 3, title: 'Sorumluluk Sahibi' },
-        weight: 1.5,
-      },
-    },
-  })
-  create(@Body() body: { roleId: number; questionId: number; weight: number }) {
-    return this.service.create(body.roleId, body.questionId, body.weight);
-  }
 
   //Weight güncelle
   @Put('/:id')
@@ -81,21 +64,11 @@ export class WeightsController {
       },
     },
   })
-  update(@Param('id') id: number, @Body() body: { weight: number }) {
-    return this.service.update(id, body.weight);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateWeightDto: UpdateWeightDto, 
+  ) {
+    return this.service.update(id, updateWeightDto.weight);
   }
 
-  //Weight sil
-  @Delete('/:id')
-  @HttpCode(200)
-  @ApiOperation({ summary: 'Delete weight by ID' })
-  @ApiOkResponse({
-    description: 'Deletes a weight record.',
-    schema: {
-      example: { message: 'Weight deleted successfully.' },
-    },
-  })
-  delete(@Param('id') id: number) {
-    return this.service.delete(id);
-  }
 }
