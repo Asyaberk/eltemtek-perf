@@ -1,4 +1,5 @@
 import { User } from "src/users/entities/users.entity";
+import { Weight } from "src/weights/entities/weights.entity";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, AfterInsert, Unique } from "typeorm"; 
 
 @Entity('roles')
@@ -15,6 +16,10 @@ export class Role {
   @OneToMany(() => User, (user) => user.role)
   users: User[];
 
+  //for weight seed
+  @OneToMany(() => Weight, (weight) => weight.role)
+  weights: Weight[];
+
   //control role insert from terminal (@AfterRemove/Update could be added later)
   @AfterInsert()
   logInsert() {
@@ -22,7 +27,4 @@ export class Role {
   }
 }
 
-//verilen dosyayı dbye çekicez mapping ile
-//önce bu
-//npm install xlsx multer @types/multer --save
 

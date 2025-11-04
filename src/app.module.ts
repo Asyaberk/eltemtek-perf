@@ -10,6 +10,8 @@ import { Department, Tesis, Seflik, Mudurluk, Role, OrganisationModule } from 'l
 import { AuthModule } from './auth/auth.module';
 import { QuestionsModule } from './questions/questions.module';
 import { Question } from './questions/entities/question.entity';
+import { WeightsModule } from './weights/weights.module';
+import { Weight } from './weights/entities/weights.entity';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import { Question } from './questions/entities/question.entity';
         Seflik,
         Mudurluk, 
         Question,
+        Weight
       ],
     }),
     //docker compose up -d --build
@@ -45,7 +48,8 @@ import { Question } from './questions/entities/question.entity';
     UsersModule,
     AuthModule,
     OrganisationModule,
-    QuestionsModule
+    QuestionsModule,
+    WeightsModule
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
